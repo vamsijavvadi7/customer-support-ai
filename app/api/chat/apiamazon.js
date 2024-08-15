@@ -4,8 +4,8 @@ import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedroc
 
 const client = new BedrockRuntimeClient({
   credentials: {
-    accessKeyId: 'AKIAU6GD2E4GUTCQPNW3',
-    secretAccessKey: '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'
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   },
   region: 'us-east-1',
 });
