@@ -1,5 +1,5 @@
-import {NextResponse} from 'next/server' // Import NextResponse from Next.js for handling responses
-import OpenAI from 'openai' // Import OpenAI library for interacting with the OpenAI API
+import { NextResponse } from 'next/server'; // Import NextResponse from Next.js for handling responses
+import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'; // Import Bedrock SDK
 
 // System prompt for the AI, providing guidelines on how to respond to users
 const systemPrompt = `You are a customer support bot for CareerGuru, a platform that offers AI-driven coaching for job seekers pursuing Software Engineering (SWE) positions. Your role includes:
@@ -33,42 +33,52 @@ Always prioritize clarity, empathy, and user satisfaction.
 Ensure confidentiality and adherence to privacy standards in all interactions.
 Be proactive in offering additional resources or guidance where needed.`;
 
-
 // POST function to handle incoming requests
 export async function POST(req) {
-  const openai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: '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',
-  });     // Create a new instance of the OpenAI client
-  const data = await req.json() // Parse the JSON body of the incoming request
-
-  // Create a chat completion request to the OpenAI API
-  const completion = await openai.chat.completions.create({
-    messages: [{role: 'system', content: systemPrompt}, ...data], // Include the system prompt and user messages
-    model: 'gpt-4o', // Specify the model to use
-    stream: true, // Enable streaming responses
-  })
-
-  // Create a ReadableStream to handle the streaming response
-  const stream = new ReadableStream({
-    async start(controller) {
-      const encoder = new TextEncoder() // Create a TextEncoder to convert strings to Uint8Array
-      try {
-        // Iterate over the streamed chunks of the response
-        for await (const chunk of completion) {
-          const content = chunk.choices[0]?.delta?.content // Extract the content from the chunk
-          if (content) {
-            const text = encoder.encode(content) // Encode the content to Uint8Array
-            controller.enqueue(text) // Enqueue the encoded text to the stream
-          }
-        }
-      } catch (err) {
-        controller.error(err) // Handle any errors that occur during streaming
-      } finally {
-        controller.close() // Close the stream when done
-      }
+  const data = await req.json(); // Parse the JSON body of the incoming request
+  const client = new BedrockRuntimeClient({
+    credentials: {
+      accessKeyId: 'AKIAU6GD2E4GUTCQPNW3',
+      secretAccessKey: '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'
     },
-  })
+    region: 'us-east-1',
+  });
 
-  return new NextResponse(stream) // Return the stream as the response
+  const command = new InvokeModelCommand({
+    modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+    contentType: 'application/json',
+    accept: 'application/json',
+    body: JSON.stringify({
+      anthropic_version: 'bedrock-2023-05-31',
+      max_tokens: 1000,
+      messages: [
+        { role: 'user', content: systemPrompt }, // Include system prompt
+        ...data // Include user messages
+      ]
+    })
+  });
+
+  try {
+    // Send the API request
+    const response = await client.send(command);
+
+    // Decode the response body
+    const bodyText = new TextDecoder().decode(response.body);
+
+    // Parse the response JSON
+    const responseData = JSON.parse(bodyText);
+
+    // Extract the result from the content array
+    const content = responseData.content;
+    if (content && content.length > 0) {
+      const result = content[0].text;
+      return new NextResponse(result); // Return the result as the response
+    } else {
+      return new NextResponse('No content found in the response.'); // Handle no content case
+    }
+
+  } catch (error) {
+    console.error('Error during API invocation:', error);
+    return new NextResponse('An error occurred while processing your request.'); // Handle errors
+  }
 }
