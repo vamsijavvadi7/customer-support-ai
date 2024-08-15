@@ -13,21 +13,21 @@ export default function HomePage() {
   const [userloading,setUserloading]=useState(false);
   const router = useRouter();
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUserloading(true)
-      if (user) {
-        setUser(user);
-        router.push('/dashboard'); 
-        // Redirect to the chat page if already signed in
-      }
-      setUserloading(false)
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     setUserloading(true)
+  //     if (user) {
+  //       setUser(user);
+  //       router.push('/dashboard'); 
+  //       // Redirect to the chat page if already signed in
+  //     }
+  //     setUserloading(false)
 
-    });
+  //   });
 
-    return () => unsubscribe();
-  }, [router]);
+  //   return () => unsubscribe();
+  // }, [router]);
 
   if (userloading) {
     return (
