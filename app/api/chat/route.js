@@ -38,7 +38,7 @@ Be proactive in offering additional resources or guidance where needed.`;
 export async function POST(req) {
   const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
-    apiKey: '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',
+    apiKey: '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',
   });     // Create a new instance of the OpenAI client
   const data = await req.json() // Parse the JSON body of the incoming request
 
@@ -46,7 +46,8 @@ export async function POST(req) {
   const completion = await openai.chat.completions.create({
     messages: [{role: 'system', content: systemPrompt}, ...data], // Include the system prompt and user messages
     model: 'gpt-4o', // Specify the model to use
-    stream: true, // Enable streaming responses
+    stream: true, 
+    max_tokens: 2666,// Enable streaming responses
   })
 
   // Create a ReadableStream to handle the streaming response
