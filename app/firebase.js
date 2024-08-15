@@ -3,7 +3,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyBiDe25EJjXrkxsUmdWV_8nPUc0xOpKoqs",
   authDomain: "chatbot-c1bf3.firebaseapp.com",
