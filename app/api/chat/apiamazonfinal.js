@@ -38,8 +38,8 @@ export async function POST(req) {
   const data = await req.json(); // Parse the JSON body of the incoming request
   const client = new BedrockRuntimeClient({
     credentials: {
-      accessKeyId: 'AKIAU6GD2E4GUTCQPNW3',
-      secretAccessKey: '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'
+    //  accessKeyId: 'AKIAU6GD2E4GUTCQPNW3',
+    //  secretAccessKey: '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'
     },
     region: 'us-east-1',
   });
