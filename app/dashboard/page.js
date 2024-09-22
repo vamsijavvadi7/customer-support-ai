@@ -7,6 +7,7 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { marked } from 'marked';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Loader from '../components/Loading';
 import SignInButton from '../components/SignInButton';
 import { auth, db } from '../firebase';
 
