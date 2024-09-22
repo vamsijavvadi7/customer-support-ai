@@ -1,14 +1,14 @@
 // pages/page.js
 'use client'
 
-import { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, Stack, TextField, Typography } from '@mui/material';
-import { auth, db } from '../firebase';
-import { collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { AppBar, Avatar, Box, Button, Card, CardContent, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { signOut } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { marked } from 'marked';
 import { useRouter } from 'next/navigation';
-import Loader from '../components/Loading';
+import { useEffect, useState } from 'react';
+import SignInButton from '../components/SignInButton';
+import { auth, db } from '../firebase';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -18,6 +18,7 @@ export default function ChatPage() {
   const [user, setUser] = useState(null);
   const [theme, setTheme] = useState('dark'); // Theme state
   const router = useRouter();
+  const [userloading, setUserloading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -144,12 +145,44 @@ export default function ChatPage() {
       justifyContent="center"
       alignItems="center"
       sx={{
-        background: isDark
-          ? 'radial-gradient(circle at 52.1% -29.6%, rgb(144, 17, 105) 0%, rgb(51, 0, 131) 100.2%)'
-          : 'radial-gradient(circle at 52.1% -29.6%, white 0%, lightgray 100.2%)',
-        color: isDark ? 'white' : 'black',
+        backgroundColor:'#FFFFFF',
+        color: 'black'
       }}
     >
+       <AppBar
+        position="absolute"
+        width="100vw"
+        style={{
+            
+          backgroundColor: 'black', // Transparent white nav bar background
+          boxShadow: '0px 4px 12px rgba(255, 255, 255, 0.15)', // Light shadow
+          backdropFilter: 'blur(10px)', // Frosted glass effect
+        }}
+      >
+        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Avatar
+              alt="AI CareerGuru Logo"
+              src="/images (1).png" // Ensure logo matches black and white theme
+              sx={{ width: 48, height: 48 }}
+            />
+            <Typography
+              variant="h4"
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: '400',
+                background: 'linear-gradient(90deg, #ffffff, #c0c0c0)', // White and light gray gradient
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontFamily: 'Montserrat, sans-serif',
+              }}
+            >
+              AI CareerGuru
+            </Typography>
+          </Stack>
+          <SignInButton setUserloading={setUserloading} />
+        </Toolbar>
+      </AppBar>
       {loading && (
         <Box
           width="100vw"
@@ -181,51 +214,9 @@ export default function ChatPage() {
           spacing={2}
           width="100%"
         >
-          <Typography
-            variant="h3"
-            fontWeight="bold"
-            gutterBottom
-            sx={{
-              background: isDark ? 'black' : 'white', // Black to white gradient
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              textShadow: `
-                1px 1px 0 rgba(1, 0, 0, 0.3),
-                2px 2px 0 rgba(0, 1, 0, 0.3),
-                3px 3px 0 rgba(0, 0, 1, 0.3),
-                4px 4px 0 rgba(0, 0, 1, 0.3),
-                5px 5px 0 rgba(0, 0, 1, 0.3)
-              `,
-            }}
-          >
-            AI CareerGuru
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              maxWidth: '10vw',
-              minWidth: '100px',
-              background: isDark
-                ? 'linear-gradient(72deg, rgb(156, 43, 171) 58.92%, rgb(39, 43, 44) 100.00%)'
-                : 'linear-gradient(72deg, lightgray 58.92%, gray 100.00%)',
-            }}
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              maxWidth: '10vw',
-              minWidth: '100px',
-              background: isDark
-                ? 'linear-gradient(72deg, rgb(156, 43, 171) 58.92%, rgb(39, 43, 44) 100.00%)'
-                : 'linear-gradient(72deg, lightgray 58.92%, gray 100.00%)',
-            }}
-            onClick={toggleTheme}
-          >
-            Toggle Theme
-          </Button>
+        
+        
+        
         </Stack>
 
         <Stack
@@ -235,6 +226,7 @@ export default function ChatPage() {
           overflow="auto"
           maxHeight="100%"
           sx={{
+            paddingTop:'64px',
             overflowY: 'auto',
             overflowX: 'hidden',
             '&::-webkit-scrollbar': {
@@ -252,16 +244,10 @@ export default function ChatPage() {
              <Card
   sx={{
     maxWidth: '70%',
-    bgcolor: isDark
-      ? message.role === 'assistant'
-        ? 'rgba(255, 255, 255, 0.1)' // Slightly transparent white for dark theme
-        : 'rgba(0, 0, 0, 0.7)' // Slightly transparent gray for user messages
-      : message.role === 'assistant'
-      ? 'rgba(0, 0, 0, 0.1)' // Slightly transparent black for light theme
-      : 'rgba(200, 200, 200, 0.7)', // Slightly transparent gray for user messages
+    bgcolor: '#F4F4F4', // Slightly transparent gray for user messages
     borderRadius: 2,
     boxShadow: 3,
-    padding: '10px', // Add padding to avoid text getting cut off
+    padding: '3px', // Add padding to avoid text getting cut off
     margin: '5px', // Add margin to ensure proper spacing
     overflowWrap: 'break-word', // Ensure long words break and don't overflow
     wordBreak: 'break-word', // Ensure long words break and don't overflow
@@ -272,13 +258,7 @@ export default function ChatPage() {
       variant="body1"
       component="div"
       sx={{
-        color: isDark
-          ? message.role === 'assistant'
-            ? 'white' // White text for dark theme assistant messages
-            : 'white' // Black text for dark theme user messages
-          : message.role === 'assistant'
-          ? 'black' // Black text for light theme assistant messages
-          : 'black', // Black text for light theme user messages
+        color: 'black',
         overflowWrap: 'break-word', // Ensure long words break and don't overflow
         wordBreak: 'break-word', // Ensure long words break and don't overflow
       }}
@@ -293,6 +273,7 @@ export default function ChatPage() {
 
         <Box
           component="form"
+          
           onSubmit={(e) => {
             e.preventDefault();
             sendMessage();
@@ -303,21 +284,26 @@ export default function ChatPage() {
             fullWidth
             multiline
             maxRows={4}
-            variant="outlined"
+         variant="standard"
             placeholder="Type your message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             sx={{
-              bgcolor: isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-              color: isDark ? 'white' : 'black',
-              borderRadius: '5px',
-              border: '1px solid',
-              borderColor: isDark ? 'primary.main' : 'secondary.main',
+              bgcolor: '#F4F4F4',
+              color: 'black',
+              padding:'15px',
+              borderRadius: '20px',
+              border: 'none', // Remove the border
+    boxShadow: 'none', 
+
+              
             }}
             InputProps={{
+              disableUnderline: true,
               style: {
-                color: isDark ? 'white' : 'black',
+               
+                color: 'black',
               },
             }}
           />
@@ -329,16 +315,14 @@ export default function ChatPage() {
             sx={{
               minWidth: '50px',
               minHeight: '50px',
-              background: isDark
-                ? 'linear-gradient(132deg, rgb(34, 181, 254) 0.00%, rgb(156, 43, 171) 100.00%)'
-                : 'linear-gradient(132deg, lightgray 0.00%, white 100.00%)',
-              color: isDark ? 'white' : 'black',
+              backgroundColor:'#D7D7D7' ,
+              color: 'black',
               borderRadius: '50%',
               marginLeft: '10px',
               '&:hover': {
-                background: isDark
-                  ? 'linear-gradient(132deg, rgb(34, 181, 254) 0.00%, rgb(39, 43, 44) 100.00%)'
-                  : 'linear-gradient(132deg, lightgray 0.00%, white 100.00%)',
+                backgroundColor: 'rgba(215, 215, 215, 0.4)', // Transparent grey effect on hover
+                color: 'black', // Keep the text color black on hover
+                boxShadow: '0px 0px 8px rgba(215, 215, 215, 0.4)', // Subtle glow or shadow effect with transparent grey
               },
             }}
           >

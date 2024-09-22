@@ -1,9 +1,9 @@
 // components/SignInButton.js
-import { useEffect, useState } from 'react';
-import { auth, provider } from '../firebase';
+import { Button } from '@mui/material';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { auth, provider } from '../firebase';
 import Loader from './Loading';
 
 export default function SignInButton({setUserloading}) {
@@ -65,7 +65,8 @@ export default function SignInButton({setUserloading}) {
           sx={{
             maxWidth: '10vw',
             minWidth: '100px',
-            background: 'linear-gradient(72deg, rgb(156, 43, 171) 58.92%, rgb(39, 43, 44) 100.00%);linear-gradient(72deg, rgb(44, 222, 242) 0.00%, rgb(156, 43, 171) 19.49%, rgb(39, 43, 44) 100.00%);' // Ensures a minimum width for the button
+            color:'black'
+,            backgroundColor: 'white'
           }}
           onClick={handleSignOut}
         >
@@ -77,7 +78,8 @@ export default function SignInButton({setUserloading}) {
           sx={{
             maxWidth: '10vw',
             minWidth: '100px',
-            background: 'linear-gradient(72deg, rgb(156, 43, 171) 58.92%, rgb(39, 43, 44) 100.00%);linear-gradient(72deg, rgb(44, 222, 242) 0.00%, rgb(156, 43, 171) 19.49%, rgb(39, 43, 44) 100.00%);' // Ensures a minimum width for the button
+            color:'black',
+            backgroundColor: 'white'
           }}
           onClick={handleSignIn}
         >
